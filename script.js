@@ -4,10 +4,12 @@ const htmlstatus=document.getElementById("status");
 let boarde=Array(9).fill("");
 let count=0;
 let turn="X";
+let gameover=false;
 function resetgame(){
     count=0;
     boarde=Array(9).fill("");
     turn="X";
+    gameover=false;
     render();
 }
 setTimeout(() => {
@@ -16,33 +18,39 @@ function wait(ms){
     return new Promise(resolve => setTimeout(resolve,ms));
 }
 async function render(){
-    if(count>=9){
-        alert("game is draw");
-        resetgame();
-    }
+    
     htmlboard.innerHTML="";
     htmlstatus.innerText=`Turn:${turn}`;
     boarde.forEach((player,index) => {
         const htmlcell=document.createElement("div");
         htmlcell.classList.add("cell");
         htmlcell.innerText=player;
-
+        if(!gameover){
         htmlcell.addEventListener("click",()=> move(index));
+        }
         htmlboard.appendChild(htmlcell);
     });
-    checkwinner();
+    await wait(500);
+    if(count>=9 && !gameover){
+        alert("game is draw");
+        resetgame();
+    }
 
 }
 
-function move(index){
+async function move(index){
+    if(gameover){
+        return;
+    }
     if(boarde[index]==""){
+    count++;
         boarde[index]=turn;
         if(turn=="X"){
             turn="O";
         }else{
             turn = "X";
         }
-        render();
+        await checkwinner();
     }else{
         alert("wrong move");
         render();
@@ -59,16 +67,8 @@ async function checkwinner(){
             boarde[a]="WON";
             boarde[b]="WON";
             boarde[c]="WON";
-             htmlboard.innerHTML="";
-    htmlstatus.innerText=`Turn:${turn}`;
-    boarde.forEach((player,index) => {
-        const htmlcell=document.createElement("div");
-        htmlcell.classList.add("cell");
-        htmlcell.innerText=player;
-
-        htmlcell.addEventListener("click",()=> move(index));
-        htmlboard.appendChild(htmlcell);
-    });
+            gameover=true;
+             render();
     await wait(500);
             if(turn=="X"){
                 turn="O";
@@ -79,6 +79,7 @@ async function checkwinner(){
             resetgame();
         }
     }
+    render();
 }
 
 render();
