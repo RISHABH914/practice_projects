@@ -6,15 +6,9 @@ let count=0;
 let turn="X";
 function resetgame(){
     count=0;
-    fetch("http://127.0.0.1:8000/newgame",{
-        method:"POST"
-    })
-    .then(res => res.json())
-    .then(data => {
-        boarde=data.board;
-        htmlstatus.innerText=`Turn:${data.turn}`;
-        render();
-    });
+    boarde=Array(9).fill("");
+    turn="X";
+    render();
 }
 
 function render(){
@@ -23,6 +17,7 @@ function render(){
         resetgame();
     }
     htmlboard.innerHTML="";
+    htmlstatus.innerText=`Turn:${turn}`;
     boarde.forEach((player,index) => {
         const htmlcell=document.createElement("div");
         htmlcell.classList.add("cell");
@@ -35,28 +30,32 @@ function render(){
 }
 
 function move(index){
-    fetch("http://127.0.0.1:8000/move",{
-        method:"POST",
-        headers: { 'Content-Type': 'application/json' },
-        body:JSON.stringify({index,boarde,turn})
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.error){
-            alert(data.error);
-            render();
-        }else{
-            count++;
-        boarde=data.board;
-        if(data.winner){
-            alert(`winner is ${data.winner}`);
-            resetgame();
-        }
-        turn=data.turn;
-        htmlstatus.innerText = `Next Turn:${data.turn}`;
+    if(boarde[index]==""){
+        boarde[index]=turn;
+        checkwinner();
+    }else{
+        alert("wrong move");
         render();
     }
-    })
+}
+
+function checkwinner(){
+    const winning = [
+        [0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]
+    ];
+    for (let combination of winning){
+        const [a,b,c]=combination;
+        if(boarde[a]!="" && boarde[a]==boarde[b] && boarde[a]==boarde[c]){
+            alert(`${turn} is winner`);
+            resetgame();
+        }
+    }
+    if(turn=="X"){
+        turn="O";
+    }else{
+        turn = "X";
+    }
+    render();
 }
 
 render();
