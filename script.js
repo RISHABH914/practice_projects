@@ -3,7 +3,7 @@ const htmlstatus=document.getElementById("status");
 
 let boarde=Array(9).fill("");
 let count=0;
-
+let turn="X";
 function resetgame(){
     count=0;
     fetch("http://127.0.0.1:8000/newgame",{
@@ -38,7 +38,7 @@ function move(index){
     fetch("http://127.0.0.1:8000/move",{
         method:"POST",
         headers: { 'Content-Type': 'application/json' },
-        body:JSON.stringify({index})
+        body:JSON.stringify({index,boarde,turn})
     })
     .then(res => res.json())
     .then(data => {
@@ -52,6 +52,7 @@ function move(index){
             alert(`winner is ${data.winner}`);
             resetgame();
         }
+        turn=data.turn;
         htmlstatus.innerText = `Next Turn:${data.turn}`;
         render();
     }
