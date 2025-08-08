@@ -5,6 +5,26 @@ let boarde=Array(9).fill("");
 let count=0;
 let turn="X";
 let gameover=false;
+let ws;
+
+
+function join(){
+    const room=document.getElementById("room").value;
+    const username=document.getElementById("username").value;
+    alert(`${room} joined`);
+    ws=new WebSocket(`ws://localhost:8000/ws/${room}/${username}`);
+
+    ws.onmessage = (event) => {
+        const data=JSON.parse(event.data);
+        boarde[data.index]=data.turn;
+        if(turn=="X"){
+            turn="O";
+        }else{
+            turn = "X";
+        }   
+        checkwinner();
+    }
+}
 function resetgame(){
     count=0;
     boarde=Array(9).fill("");
@@ -45,6 +65,7 @@ async function move(index){
     if(boarde[index]==""){
     count++;
         boarde[index]=turn;
+        ws.send(JSON.stringify({index,turn}));
         if(turn=="X"){
             turn="O";
         }else{
