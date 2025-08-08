@@ -12,7 +12,7 @@ function join(){
     const room=document.getElementById("room").value;
     const username=document.getElementById("username").value;
     alert(`${room} joined`);
-    ws=new WebSocket(`wss://practice-projects-jlk1.onrender.com/ws/${room}/${username}`);
+    ws=new WebSocket(`ws://practice-projects-jlk1.onrender.com/ws/${room}/${username}`);
 
     ws.onmessage = (event) => {
         const data=JSON.parse(event.data);
