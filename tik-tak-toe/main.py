@@ -1,7 +1,7 @@
 # server.py
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-
+import os
 app = FastAPI()
 connections = {}
 rooms = {}  # { room_id: {"password": str, "users": [ws1, ws2]} }
